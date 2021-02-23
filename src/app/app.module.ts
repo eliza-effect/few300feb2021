@@ -18,6 +18,8 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { reducers } from './reducers';
 import { ListComponent } from './components/list/list.component';
+import { LoginComponent } from './components/login/login.component';
+import { AuthGuard } from './services/auth.guard';
 
 
 
@@ -32,7 +34,8 @@ import { ListComponent } from './components/list/list.component';
     ActionsComponent,
     InboxComponent,
     TodoEntryComponent,
-    ListComponent
+    ListComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +47,7 @@ import { ListComponent } from './components/list/list.component';
     StoreDevtoolsModule.instrument(),
     ...MaterialModules
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
