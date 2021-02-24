@@ -6,9 +6,12 @@
                [mode]="(isHandset$ | async) ? 'over' : 'side'"
                [opened]="(isHandset$ | async) === false">
     <mat-toolbar>Menu</mat-toolbar>
-    <mat-nav-list>
+    <button mat-button
+            *ngIf="isLoggedIn$ | async"
+            (click)="logOut()">Logout</button>
+    <mat-nav-list *ngIf="isLoggedIn$ | async">
       <a mat-list-item
-         href="#">Link 1</a>
+         [routerLink]="['admin']">Admin</a>
       <a mat-list-item
          href="#">Link 2</a>
       <a mat-list-item

@@ -22,6 +22,16 @@ export const todoItemAdded = createAction(
   })
 );
 
+export const todoItemAddedSuccess = createAction(
+  '[app] todo item added successfully',
+  props<{ payload: TodoEntity, oldId: string }>()
+);
+
+export const todoItemAddedFailure = createAction(
+  '[app] todo item add failed',
+  props<{ payload: TodoEntity, message: string }>()
+);
+
 
 export const todoItemMarkedComplete = createAction(
   '[app] todo item marked complete',

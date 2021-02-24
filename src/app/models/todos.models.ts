@@ -11,4 +11,5 @@ export interface TodoListItem {
   dueDate?: string;
   project?: string;
   completed: boolean;
+  isSaved: boolean;
 }

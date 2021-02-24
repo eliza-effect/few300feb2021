@@ -28,7 +28,12 @@ const selectAuthBranch = (state: AppState) => state.auth;
 const { selectAll: selectAllTodoArray } = fromTodos.adapter.getSelectors(selectTodosBranch);
 const selectTodoItemsListModel = createSelector(
   selectAllTodoArray,
-  (todos) => todos as models.TodoListItem[]
+  (todos) => todos.map(todo => {
+    return {
+      ...todo,
+      isSaved: !todo.id.startsWith('T')
+    } as models.TodoListItem;
+  })
 );
 
 const { selectAll: selectAllProjectsArray } = fromProjects.adapter.getSelectors(selectProjectsBranch);
@@ -57,7 +62,7 @@ export const selectProjectList = createSelector(
 
 
 export const selectTodosForProject = createSelector(
-  selectAllTodoArray,
+  selectTodoItemsListModel,
   (todos, props: { project: string }) => {
     return todos.filter(todo => todo.project === props.project)
       .map(todo => todo as models.TodoListItem[]);

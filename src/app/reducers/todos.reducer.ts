@@ -31,6 +31,11 @@ const initialState = adapter.getInitialState();
 
 const reducerFunction = createReducer( // return a new state that has this added to it
   initialState,
+  on(actions.todoItemAddedSuccess, (state, action) => {
+    const tempState = adapter.removeOne(action.oldId, state);
+    return adapter.addOne(action.payload, tempState);
+  }), // could also use the updateOne below {id: action.oldId, changes: {id: action.payload.id}, state}
+  on(actions.todoItemAddedFailure, (s, a) => adapter.removeOne(a.payload.id, s)),
   on(actions.todoItemAdded, (state, action) => adapter.addOne(action.payload, state)),
   on(actions.todoItemMarkedComplete, actions.todoItemMarkedIncomplete,
     (state, action) => adapter.updateOne({ id: action.item.id, changes: { completed: !action.item.completed } }, state)),

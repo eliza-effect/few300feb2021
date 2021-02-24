@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { loginRequested } from 'src/app/actions/auth.actions';
+import { checkForCredentials, loginRequested } from 'src/app/actions/auth.actions';
 import { AppState } from 'src/app/reducers';
 
 @Component({
@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
     private store: Store<AppState>) { }
 
   ngOnInit(): void {
+    this.store.dispatch(checkForCredentials());
     this.form = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required]

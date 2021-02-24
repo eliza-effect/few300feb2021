@@ -18,3 +18,7 @@ export const loginFailed = createAction(
 export const logOutRequested = createAction(
   '[app] auth logout requested',
 );
+
+export const checkForCredentials = createAction(
+  '[app] auth check for credentials'
+);

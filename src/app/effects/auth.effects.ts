@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment'; // NOTE: Only this one ever. never the.prod or whatever.
 import * as authActions from '../actions/auth.actions';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 
 
 @Injectable()
 export class AuthEffects {
+
+
 
   readonly baseUri = environment.apiUrl;
 
@@ -33,6 +35,89 @@ export class AuthEffects {
       ))
     ), { dispatch: true }
   );
+
+
+  // login succeeded => write the token & expiration in localStorage => (NOTHING (dispatch false))
+  loginSucceededSaveToken$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authActions.loginSucceeded),
+      tap(a => {
+        localStorage.setItem('token', a.token);
+        const tokenData = JSON.parse(atob(a.token.split('.')[1])) as { exp: number, username: string };
+        const date = new Date();
+        date.setUTCSeconds(tokenData.exp);
+        localStorage.setItem('token-expire', JSON.stringify(date));
+        localStorage.setItem('username', tokenData.username);
+      })
+    ), { dispatch: false }
+  );
+
+
+  // logout
+  logout$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authActions.logOutRequested),
+      tap(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-expire');
+        localStorage.removeItem('username');
+      }
+      )
+    ), { dispatch: false }
+  );
+
+  logoutSendsToLogin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authActions.logOutRequested),
+      tap(() => this.router.navigate(['login']))
+    ), { dispatch: false }
+  );
+
+  // my version of date parsing in credentials check
+
+  // checkforCredentials$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(authActions.checkForCredentials),
+  //     map(() => {
+  //       const expire = localStorage.getItem('token-expire');
+  //       const username = localStorage.getItem('username');
+  //       const token = localStorage.getItem('token');
+  //       if (expire && username && token) {
+  //         const expireDate = Date.parse(expire);
+  //         // TODO reexamine this
+  //         if (expireDate > Date.now()) {
+  //           return ({ expire, username, token });
+  //         }
+  //         else { return null; }
+  //       } else { return null; }
+  //     }),
+  //     filter((t) => t !== null),
+  //     map(t => authActions.loginSucceeded({ username: t.username, token: t.token }))
+  //   ), { dispatch: false });
+
+  checkforCredentials$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(authActions.checkForCredentials),
+      map(() => {
+        // read the token and stuff. If it is expired or not there, return null
+        const expire = localStorage.getItem('token-expire');
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+        if (expire && username && token) {
+          const expireDate = new Date(JSON.parse(expire));
+          if (expireDate > new Date()) {
+            return ({ expire, username, token });
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      }),
+      filter((t: { expire: string; username: string, token: string }) => t !== null), // stop here if it isn't a good set of credentials
+      map(t => authActions.loginSucceeded({ username: t.username, token: t.token }))
+    )
+    , { dispatch: true });
 
   constructor(
     private actions$: Actions,

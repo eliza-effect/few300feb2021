@@ -26,6 +26,9 @@ import { AuthEffects } from './effects/auth.effects';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { TodosDataService } from './services/todos-data.service';
 import { TodosEffects } from './effects/todos.effects';
+import { ProjectsDataService } from './services/projects-data.service';
+import { ProjectsEffects } from './effects/projects.effects';
+import { AdminModule } from './features/admin/admin.module';
 
 
 
@@ -44,6 +47,7 @@ import { TodosEffects } from './effects/todos.effects';
   ],
   imports: [
     BrowserModule,
+    AdminModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
@@ -52,9 +56,10 @@ import { TodosEffects } from './effects/todos.effects';
     StoreDevtoolsModule.instrument(),
     HttpClientModule,
     ...MaterialModules,
-    EffectsModule.forRoot([AuthEffects, TodosEffects])
+    EffectsModule.forRoot([AuthEffects, TodosEffects, ProjectsEffects])
   ],
   providers: [AuthGuard,
+    ProjectsDataService,
     TodosDataService,
     {
       provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true

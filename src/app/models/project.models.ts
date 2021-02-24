@@ -3,3 +3,8 @@ export interface ProjectListItem {
   name: string;
   numberOfTodos: number;
 }
+
+export interface ProjectCreate {
+  id: string;
+  name: string;
+}

@@ -8,6 +8,20 @@ import { TodosDataService } from '../services/todos-data.service';
 @Injectable()
 export class TodosEffects {
 
+  // todoItemAdded => (api) => (todoItemAddedSuccess | todoItemAddedFailure)
+  addTodo$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(actions.todoItemAdded),
+      switchMap(originalAction => this.service.addTodo(originalAction.payload)
+        .pipe(
+          map(r => actions.todoItemAddedSuccess({ payload: r, oldId: originalAction.payload.id })),
+          catchError(err => of(actions.todoItemAddedFailure({ payload: originalAction.payload, message: 'Error adding todo item' })))
+        )
+      )
+    ), { dispatch: true }
+  );
+
+
   // loadTodos => (go to the api) => (loadTodosSucceeded | loadTodosFailed)
   load$ = createEffect(() =>
     this.actions$.pipe(
