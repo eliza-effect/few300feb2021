@@ -33,6 +33,20 @@ export const todoItemMarkedIncomplete = createAction(
   props<{ item: TodoEntity }>()
 );
 
+export const loadTodos = createAction(
+  '[app] load todos'
+);
+
+
+export const loadTodosSucceeded = createAction(
+  '[app] loading todos succeeded',
+  props<{ payload: TodoEntity[] }>()
+);
+
+export const loadTodosFailed = createAction(
+  '[app] loading todos failed',
+  props<{ errorMessage: string }>()
+);
 // happy path
 
 

@@ -20,9 +20,12 @@ import { reducers } from './reducers';
 import { ListComponent } from './components/list/list.component';
 import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './services/auth.guard';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './effects/auth.effects';
+import { AuthInterceptor } from './services/auth.interceptor';
+import { TodosDataService } from './services/todos-data.service';
+import { TodosEffects } from './effects/todos.effects';
 
 
 
@@ -49,9 +52,14 @@ import { AuthEffects } from './effects/auth.effects';
     StoreDevtoolsModule.instrument(),
     HttpClientModule,
     ...MaterialModules,
-    EffectsModule.forRoot([AuthEffects])
+    EffectsModule.forRoot([AuthEffects, TodosEffects])
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard,
+    TodosDataService,
+    {
+      provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
   loggedIn: boolean;
 
   constructor(store: Store<AppState>, private router: Router) {
-    store.select(selectIsLoggedIn).subscribe(on => this.loggedIn = true);
+    store.select(selectIsLoggedIn).subscribe(on => this.loggedIn = on);
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {

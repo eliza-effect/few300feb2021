@@ -16,24 +16,25 @@ export interface TodosState extends EntityState<TodoEntity> {
 
 export const adapter = createEntityAdapter<TodoEntity>();
 
-const initialState: TodosState = {
-  ids: ['1', '2', '3', '4'],
-  entities: {
-    1: { id: '1', name: 'Make Chicken', completed: false },
-    2: { id: '2', name: 'Organize basement', project: 'Home', completed: false },
-    3: { id: '3', name: 'Vacuum Bathroom', project: 'Home', dueDate: '2021-02-24T20:39:47.830Z', completed: false },
-    4: { id: '4', name: 'Greeble ', dueDate: '2021-05-15T20:39:47.830Z', completed: false }
-  }
-};
+// const initialState: TodosState = {
+//   ids: ['1', '2', '3', '4'],
+//   entities: {
+//     1: { id: '1', name: 'Make Chicken', completed: false },
+//     2: { id: '2', name: 'Organize basement', project: 'Home', completed: false },
+//     3: { id: '3', name: 'Vacuum Bathroom', project: 'Home', dueDate: '2021-02-24T20:39:47.830Z', completed: false },
+//     4: { id: '4', name: 'Greeble ', dueDate: '2021-05-15T20:39:47.830Z', completed: false }
+//   }
+// };
 
 
-// const initialState = adapter.getInitialState();
+const initialState = adapter.getInitialState();
 
 const reducerFunction = createReducer( // return a new state that has this added to it
   initialState,
   on(actions.todoItemAdded, (state, action) => adapter.addOne(action.payload, state)),
   on(actions.todoItemMarkedComplete, actions.todoItemMarkedIncomplete,
-    (state, action) => adapter.updateOne({ id: action.item.id, changes: { completed: !action.item.completed } }, state))
+    (state, action) => adapter.updateOne({ id: action.item.id, changes: { completed: !action.item.completed } }, state)),
+  on(actions.loadTodosSucceeded, (state, action) => adapter.setAll(action.payload, state))
 );
 
 export function reducer(state: TodosState = initialState, action: Action): TodosState {
